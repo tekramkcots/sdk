@@ -28,6 +28,10 @@ func (c *Candle) Update(price float32) {
 	}
 }
 
+func (c Candle) Next() *Candle {
+	return New(c.Close)
+}
+
 type CandleType uint
 
 func (c CandleType) GetStartTime(t time.Time) time.Time {
@@ -36,6 +40,15 @@ func (c CandleType) GetStartTime(t time.Time) time.Time {
 	startTime := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), 0, 0, t.Location())
 	startTime = startTime.Add(-adjust * time.Minute)
 	return startTime
+}
+
+func (c CandleType) Duration() time.Duration {
+	isMinuteCandle := c.IsMinuteCandle()
+	multiplier := time.Second
+	if isMinuteCandle {
+		multiplier = time.Minute
+	}
+	return multiplier * time.Duration(c)
 }
 
 func (c CandleType) IsMinuteCandle() bool {
@@ -68,5 +81,13 @@ func NewData(candleType CandleType, price float32, t time.Time) *CandleData {
 		From:   candleType.GetStartTime(t),
 		Type:   candleType,
 		Candle: New(price),
+	}
+}
+
+func (c CandleData) Next() *CandleData {
+	return &CandleData{
+		From:   c.From.Add(c.Type.Duration()),
+		Type:   c.Type,
+		Candle: c.Candle.Next(),
 	}
 }
