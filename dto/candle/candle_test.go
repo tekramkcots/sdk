@@ -25,12 +25,12 @@ func TestNew(t *testing.T) {
 
 var candleUpdateTestcases = []struct {
 	name          string
-	startPrice    float32
-	updatePrice   float32
-	expectedOpen  float32
-	expectedHigh  float32
-	expectedLow   float32
-	expectedClose float32
+	startPrice    float64
+	updatePrice   float64
+	expectedOpen  float64
+	expectedHigh  float64
+	expectedLow   float64
+	expectedClose float64
 }{
 	{"update with higher price", 10, 20, 10, 20, 10, 20},
 	{"update with lower price", 10, 5, 10, 10, 5, 5},
@@ -59,12 +59,12 @@ func TestCandleUpdate(t *testing.T) {
 
 var candleNextTestcases = []struct {
 	name          string
-	startPrice    float32
-	updatePrice   float32
-	expectedOpen  float32
-	expectedHigh  float32
-	expectedLow   float32
-	expectedClose float32
+	startPrice    float64
+	updatePrice   float64
+	expectedOpen  float64
+	expectedHigh  float64
+	expectedLow   float64
+	expectedClose float64
 }{
 	{"update with higher price", 10, 20, 20, 20, 20, 20},
 	{"update with lower price", 10, 5, 5, 5, 5, 5},
@@ -94,7 +94,7 @@ func TestCandleNext(t *testing.T) {
 
 var candleTypeIsMinuteCandleTestcases = []struct {
 	name                   string
-	candleType             candle.CandleType
+	candleType             candle.Type
 	expectedIsMinuteCandle bool
 }{
 	{"minute candle", candle.Minute, true},
@@ -103,7 +103,7 @@ var candleTypeIsMinuteCandleTestcases = []struct {
 	{"fifteen minute candle", candle.FifteenMinute, true},
 }
 
-func TestCandleTypeIsMinuteCandle(t *testing.T) {
+func TestTypeIsMinuteCandle(t *testing.T) {
 	for _, tc := range candleTypeIsMinuteCandleTestcases {
 		t.Run(tc.name, func(t *testing.T) {
 			if tc.candleType.IsMinuteCandle() != tc.expectedIsMinuteCandle {
@@ -115,7 +115,7 @@ func TestCandleTypeIsMinuteCandle(t *testing.T) {
 
 var candleTypeGetStartTimeTestcases = []struct {
 	name              string
-	candleType        candle.CandleType
+	candleType        candle.Type
 	startTime         time.Time
 	expectedStartTime time.Time
 }{
@@ -169,7 +169,7 @@ var candleTypeGetStartTimeTestcases = []struct {
 	},
 }
 
-func TestCandleTypeGetStartTime(t *testing.T) {
+func TestTypeGetStartTime(t *testing.T) {
 	for _, tc := range candleTypeGetStartTimeTestcases {
 		t.Run(tc.name, func(t *testing.T) {
 			startTime := tc.candleType.GetStartTime(tc.startTime)
@@ -182,7 +182,7 @@ func TestCandleTypeGetStartTime(t *testing.T) {
 
 var candleTypeDurationTestcases = []struct {
 	name             string
-	candleType       candle.CandleType
+	candleType       candle.Type
 	expectedDuration time.Duration
 }{
 	{"Minute", candle.Minute, time.Minute},
@@ -191,7 +191,7 @@ var candleTypeDurationTestcases = []struct {
 	{"Fifteen Minute", candle.FifteenMinute, time.Minute * 15},
 }
 
-func TestCandleTypeDuration(t *testing.T) {
+func TestTypeDuration(t *testing.T) {
 	for _, tc := range candleTypeDurationTestcases {
 		t.Run(tc.name, func(t *testing.T) {
 			duration := tc.candleType.Duration()
@@ -204,10 +204,10 @@ func TestCandleTypeDuration(t *testing.T) {
 
 var candleDataNewtestcases = []struct {
 	name               string
-	candleType         candle.CandleType
-	expectedCandleType candle.CandleType
-	price              float32
-	expectedClose      float32
+	candleType         candle.Type
+	expectedCandleType candle.Type
+	price              float64
+	expectedClose      float64
 	startTime          time.Time
 	expectedStartTime  time.Time
 }{
@@ -250,11 +250,11 @@ func TestCandleDataNewData(t *testing.T) {
 
 var candleDataNextTestcases = []struct {
 	name                   string
-	candleType             candle.CandleType
-	expectedNextCandleType candle.CandleType
-	price                  float32
-	updatePrice            float32
-	expectedOpen           float32
+	candleType             candle.Type
+	expectedNextCandleType candle.Type
+	price                  float64
+	updatePrice            float64
+	expectedOpen           float64
 	startTime              time.Time
 	expectedStartTime      time.Time
 }{

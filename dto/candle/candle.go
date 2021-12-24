@@ -2,39 +2,39 @@ package candle
 
 import "time"
 
-type Candle struct {
-	Open  float32
-	High  float32
-	Low   float32
-	Close float32
+type Stick struct {
+	Open  float64
+	High  float64
+	Low   float64
+	Close float64
 }
 
-func New(price float32) *Candle {
-	return &Candle{
-		Open:  price,
-		High:  price,
-		Low:   price,
-		Close: price,
+func New(value float64) *Stick {
+	return &Stick{
+		Open:  value,
+		High:  value,
+		Low:   value,
+		Close: value,
 	}
 }
 
-func (c *Candle) Update(price float32) {
-	c.Close = price
-	if c.High < price {
-		c.High = price
+func (c *Stick) Update(value float64) {
+	c.Close = value
+	if c.High < value {
+		c.High = value
 	}
-	if c.Low > price {
-		c.Low = price
+	if c.Low > value {
+		c.Low = value
 	}
 }
 
-func (c Candle) Next() *Candle {
+func (c Stick) Next() *Stick {
 	return New(c.Close)
 }
 
-type CandleType uint
+type Type uint
 
-func (c CandleType) GetStartTime(t time.Time) time.Time {
+func (c Type) GetStartTime(t time.Time) time.Time {
 	timeParameter := t.Minute()
 	adjust := time.Duration(timeParameter % int(c))
 	startTime := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), 0, 0, t.Location())
@@ -42,7 +42,7 @@ func (c CandleType) GetStartTime(t time.Time) time.Time {
 	return startTime
 }
 
-func (c CandleType) Duration() time.Duration {
+func (c Type) Duration() time.Duration {
 	isMinuteCandle := c.IsMinuteCandle()
 	multiplier := time.Second
 	if isMinuteCandle {
@@ -51,41 +51,41 @@ func (c CandleType) Duration() time.Duration {
 	return multiplier * time.Duration(c)
 }
 
-func (c CandleType) IsMinuteCandle() bool {
+func (c Type) IsMinuteCandle() bool {
 	_, ok := minuteCandles[c]
 	return ok
 }
 
 const (
-	Minute        CandleType = 1
-	FiveMinute    CandleType = 5
-	TenMinute     CandleType = 10
-	FifteenMinute CandleType = 15
+	Minute        Type = 1
+	FiveMinute    Type = 5
+	TenMinute     Type = 10
+	FifteenMinute Type = 15
 )
 
-var minuteCandles = map[CandleType]struct{}{
+var minuteCandles = map[Type]struct{}{
 	Minute:        {},
 	FiveMinute:    {},
 	TenMinute:     {},
 	FifteenMinute: {},
 }
 
-type CandleData struct {
+type Data struct {
 	From   time.Time
-	Type   CandleType
-	Candle *Candle
+	Type   Type
+	Candle *Stick
 }
 
-func NewData(candleType CandleType, price float32, t time.Time) *CandleData {
-	return &CandleData{
-		From:   candleType.GetStartTime(t),
-		Type:   candleType,
-		Candle: New(price),
+func NewData(Type Type, value float64, t time.Time) *Data {
+	return &Data{
+		From:   Type.GetStartTime(t),
+		Type:   Type,
+		Candle: New(value),
 	}
 }
 
-func (c CandleData) Next() *CandleData {
-	return &CandleData{
+func (c Data) Next() *Data {
+	return &Data{
 		From:   c.From.Add(c.Type.Duration()),
 		Type:   c.Type,
 		Candle: c.Candle.Next(),
