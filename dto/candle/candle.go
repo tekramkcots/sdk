@@ -3,10 +3,11 @@ package candle
 import "time"
 
 type Stick struct {
-	Open  float64
-	High  float64
-	Low   float64
-	Close float64
+	Open    float64
+	High    float64
+	Low     float64
+	Close   float64
+	updated bool
 }
 
 func New(value float64) *Stick {
@@ -26,6 +27,13 @@ func (c *Stick) Update(value float64) {
 	if c.Low > value {
 		c.Low = value
 	}
+	if !c.updated {
+		c.Open = value
+		c.High = value
+		c.Low = value
+		c.Low = value
+	}
+	c.updated = true
 }
 
 func (c Stick) Next() *Stick {
