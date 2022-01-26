@@ -10,13 +10,8 @@ type Stick struct {
 	updated bool
 }
 
-func New(value float64) *Stick {
-	return &Stick{
-		Open:  value,
-		High:  value,
-		Low:   value,
-		Close: value,
-	}
+func New() *Stick {
+	return &Stick{}
 }
 
 func (c *Stick) Update(value float64) {
@@ -37,7 +32,7 @@ func (c *Stick) Update(value float64) {
 }
 
 func (c Stick) Next() *Stick {
-	return New(c.Close)
+	return New()
 }
 
 type Type uint
@@ -84,11 +79,11 @@ type Data struct {
 	Candle *Stick
 }
 
-func NewData(Type Type, value float64, t time.Time) *Data {
+func NewData(Type Type, t time.Time) *Data {
 	return &Data{
 		From:   Type.GetStartTime(t),
 		Type:   Type,
-		Candle: New(value),
+		Candle: New(),
 	}
 }
 

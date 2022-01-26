@@ -8,39 +8,40 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	candle := candle.New(10)
-	if candle.Close != 10 {
+	candle := candle.New()
+	if candle.Close != 0 {
 		t.Errorf("Expected candle.Close to be 10, got %f", candle.Close)
 	}
-	if candle.High != 10 {
+	if candle.High != 0 {
 		t.Errorf("Expected candle.High to be 10, got %f", candle.High)
 	}
-	if candle.Low != 10 {
+	if candle.Low != 0 {
 		t.Errorf("Expected candle.Low to be 10, got %f", candle.Low)
 	}
-	if candle.Open != 10 {
+	if candle.Open != 0 {
 		t.Errorf("Expected candle.Open to be 10, got %f", candle.Open)
 	}
 }
 
 var candleUpdateTestcases = []struct {
 	name          string
-	startPrice    float64
-	updatePrice   float64
+	updatePrice   []float64
 	expectedOpen  float64
 	expectedHigh  float64
 	expectedLow   float64
 	expectedClose float64
 }{
-	{"update with higher price", 10, 20, 10, 20, 10, 20},
-	{"update with lower price", 10, 5, 10, 10, 5, 5},
+	{"update with higher price", []float64{10, 20}, 10, 20, 10, 20},
+	{"update with lower price", []float64{10, 5}, 10, 10, 5, 5},
 }
 
 func TestCandleUpdate(t *testing.T) {
 	for _, tc := range candleUpdateTestcases {
 		t.Run(tc.name, func(t *testing.T) {
-			candle := candle.New(tc.startPrice)
-			candle.Update(tc.updatePrice)
+			candle := candle.New()
+			for _, v := range tc.updatePrice {
+				candle.Update(v)
+			}
 			if candle.Close != tc.expectedClose {
 				t.Errorf("Expected candle.Close to be %f, got %f", tc.expectedClose, candle.Close)
 			}
@@ -59,21 +60,20 @@ func TestCandleUpdate(t *testing.T) {
 
 var candleNextTestcases = []struct {
 	name          string
-	startPrice    float64
 	updatePrice   float64
 	expectedOpen  float64
 	expectedHigh  float64
 	expectedLow   float64
 	expectedClose float64
 }{
-	{"update with higher price", 10, 20, 20, 20, 20, 20},
-	{"update with lower price", 10, 5, 5, 5, 5, 5},
+	{"update with higher price", 20, 0, 0, 0, 0},
+	{"update with lower price", 5, 0, 0, 0, 0},
 }
 
 func TestCandleNext(t *testing.T) {
 	for _, tc := range candleNextTestcases {
 		t.Run(tc.name, func(t *testing.T) {
-			candle := candle.New(tc.startPrice)
+			candle := candle.New()
 			candle.Update(tc.updatePrice)
 			candle = candle.Next()
 			if candle.Close != tc.expectedClose {
@@ -206,7 +206,6 @@ var candleDataNewtestcases = []struct {
 	name               string
 	candleType         candle.Type
 	expectedCandleType candle.Type
-	price              float64
 	expectedClose      float64
 	startTime          time.Time
 	expectedStartTime  time.Time
@@ -215,8 +214,7 @@ var candleDataNewtestcases = []struct {
 		name:               "Minute - Normal",
 		candleType:         candle.Minute,
 		expectedCandleType: candle.Minute,
-		price:              1.0,
-		expectedClose:      1.0,
+		expectedClose:      0,
 		startTime:          time.Date(2020, time.January, 1, 1, 1, 0, 0, time.UTC),
 		expectedStartTime:  time.Date(2020, time.January, 1, 1, 1, 0, 0, time.UTC),
 	},
@@ -224,8 +222,7 @@ var candleDataNewtestcases = []struct {
 		name:               "Minute - offset",
 		candleType:         candle.Minute,
 		expectedCandleType: candle.Minute,
-		price:              1.0,
-		expectedClose:      1.0,
+		expectedClose:      0,
 		startTime:          time.Date(2020, time.January, 1, 1, 1, 30, 0, time.UTC),
 		expectedStartTime:  time.Date(2020, time.January, 1, 1, 1, 0, 0, time.UTC),
 	},
@@ -234,7 +231,7 @@ var candleDataNewtestcases = []struct {
 func TestCandleDataNewData(t *testing.T) {
 	for _, tc := range candleDataNewtestcases {
 		t.Run(tc.name, func(t *testing.T) {
-			cd := candle.NewData(tc.candleType, tc.price, tc.startTime)
+			cd := candle.NewData(tc.candleType, tc.startTime)
 			if !cd.From.Equal(tc.expectedStartTime) {
 				t.Errorf("Expected startTime to be %s, got %s", tc.expectedStartTime, cd.From)
 			}
@@ -252,7 +249,6 @@ var candleDataNextTestcases = []struct {
 	name                   string
 	candleType             candle.Type
 	expectedNextCandleType candle.Type
-	price                  float64
 	updatePrice            float64
 	expectedOpen           float64
 	startTime              time.Time
@@ -262,7 +258,6 @@ var candleDataNextTestcases = []struct {
 		name:                   "Minute - Normal",
 		candleType:             candle.Minute,
 		expectedNextCandleType: candle.Minute,
-		price:                  1.0,
 		updatePrice:            2.0,
 		expectedOpen:           2.0,
 		startTime:              time.Date(2020, time.January, 1, 1, 1, 0, 0, time.UTC),
@@ -272,7 +267,6 @@ var candleDataNextTestcases = []struct {
 		name:                   "Minute - offset",
 		candleType:             candle.Minute,
 		expectedNextCandleType: candle.Minute,
-		price:                  1.0,
 		updatePrice:            2.0,
 		expectedOpen:           2.0,
 		startTime:              time.Date(2020, time.January, 1, 1, 1, 30, 0, time.UTC),
@@ -283,14 +277,14 @@ var candleDataNextTestcases = []struct {
 func TestCandleDataNext(t *testing.T) {
 	for _, tc := range candleDataNextTestcases {
 		t.Run(tc.name, func(t *testing.T) {
-			cd := candle.NewData(tc.candleType, tc.price, tc.startTime)
-			cd.Candle.Update(tc.updatePrice)
+			cd := candle.NewData(tc.candleType, tc.startTime)
 			newCd := cd.Next()
+			newCd.Candle.Update(tc.updatePrice)
 			if !newCd.From.Equal(tc.expectedStartTime) {
 				t.Errorf("Expected startTime to be %s, got %s", tc.expectedStartTime, newCd.From)
 			}
 			if newCd.Candle.Open != tc.expectedOpen {
-				t.Errorf("Expected close to be %f, got %f", tc.expectedOpen, cd.Candle.Open)
+				t.Errorf("Expected open to be %f, got %f", tc.expectedOpen, newCd.Candle.Open)
 			}
 			if newCd.Type != tc.expectedNextCandleType {
 				t.Errorf("Expected candleType to be %d, got %d", tc.expectedNextCandleType, newCd.Type)

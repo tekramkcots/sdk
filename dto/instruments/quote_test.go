@@ -37,7 +37,7 @@ var candleNextTestcases = []struct {
 	name               string
 	candleType         candle.Type
 	expectedCandleType candle.Type
-	price              float64
+	updatePrice        float64
 	expectedClose      float64
 	startTime          time.Time
 	expectedStartTime  time.Time
@@ -46,7 +46,7 @@ var candleNextTestcases = []struct {
 		name:               "Minute - Normal",
 		candleType:         candle.Minute,
 		expectedCandleType: candle.Minute,
-		price:              1.0,
+		updatePrice:        1.0,
 		expectedClose:      1.0,
 		startTime:          time.Date(2020, time.January, 1, 1, 1, 0, 0, time.UTC),
 		expectedStartTime:  time.Date(2020, time.January, 1, 1, 2, 0, 0, time.UTC),
@@ -55,7 +55,7 @@ var candleNextTestcases = []struct {
 		name:               "Minute - offset",
 		candleType:         candle.Minute,
 		expectedCandleType: candle.Minute,
-		price:              1.0,
+		updatePrice:        1.0,
 		expectedClose:      1.0,
 		startTime:          time.Date(2020, time.January, 1, 1, 1, 30, 0, time.UTC),
 		expectedStartTime:  time.Date(2020, time.January, 1, 1, 2, 0, 0, time.UTC),
@@ -64,7 +64,7 @@ var candleNextTestcases = []struct {
 		name:               "5 Minute - Normal",
 		candleType:         candle.FiveMinute,
 		expectedCandleType: candle.FiveMinute,
-		price:              1.0,
+		updatePrice:        1.0,
 		expectedClose:      1.0,
 		startTime:          time.Date(2020, time.January, 1, 1, 5, 0, 0, time.UTC),
 		expectedStartTime:  time.Date(2020, time.January, 1, 1, 10, 0, 0, time.UTC),
@@ -73,7 +73,7 @@ var candleNextTestcases = []struct {
 		name:               "5 Minute - offset",
 		candleType:         candle.FiveMinute,
 		expectedCandleType: candle.FiveMinute,
-		price:              1.0,
+		updatePrice:        1.0,
 		expectedClose:      1.0,
 		startTime:          time.Date(2020, time.January, 1, 1, 7, 30, 0, time.UTC),
 		expectedStartTime:  time.Date(2020, time.January, 1, 1, 10, 0, 0, time.UTC),
@@ -82,7 +82,7 @@ var candleNextTestcases = []struct {
 		name:               "10 Minute - Normal",
 		candleType:         candle.TenMinute,
 		expectedCandleType: candle.TenMinute,
-		price:              1.0,
+		updatePrice:        1.0,
 		expectedClose:      1.0,
 		startTime:          time.Date(2020, time.January, 1, 1, 10, 0, 0, time.UTC),
 		expectedStartTime:  time.Date(2020, time.January, 1, 1, 20, 0, 0, time.UTC),
@@ -91,7 +91,7 @@ var candleNextTestcases = []struct {
 		name:               "10 Minute - offset",
 		candleType:         candle.TenMinute,
 		expectedCandleType: candle.TenMinute,
-		price:              1.0,
+		updatePrice:        1.0,
 		expectedClose:      1.0,
 		startTime:          time.Date(2020, time.January, 1, 1, 17, 30, 0, time.UTC),
 		expectedStartTime:  time.Date(2020, time.January, 1, 1, 20, 0, 0, time.UTC),
@@ -100,7 +100,7 @@ var candleNextTestcases = []struct {
 		name:               "15 Minute - Normal",
 		candleType:         candle.FifteenMinute,
 		expectedCandleType: candle.FifteenMinute,
-		price:              1.0,
+		updatePrice:        1.0,
 		expectedClose:      1.0,
 		startTime:          time.Date(2020, time.January, 1, 1, 15, 0, 0, time.UTC),
 		expectedStartTime:  time.Date(2020, time.January, 1, 1, 30, 0, 0, time.UTC),
@@ -109,7 +109,7 @@ var candleNextTestcases = []struct {
 		name:               "15 Minute - offset",
 		candleType:         candle.FifteenMinute,
 		expectedCandleType: candle.FifteenMinute,
-		price:              1.0,
+		updatePrice:        1.0,
 		expectedClose:      1.0,
 		startTime:          time.Date(2020, time.January, 1, 1, 17, 30, 0, time.UTC),
 		expectedStartTime:  time.Date(2020, time.January, 1, 1, 30, 0, 0, time.UTC),
@@ -119,8 +119,9 @@ var candleNextTestcases = []struct {
 func TestCandleNext(t *testing.T) {
 	for _, tc := range candleNextTestcases {
 		t.Run(tc.name, func(t *testing.T) {
-			cd := instruments.Candle{Token: 1, Candle: candle.NewData(tc.candleType, tc.price, tc.startTime)}
+			cd := instruments.Candle{Token: 1, Candle: candle.NewData(tc.candleType, tc.startTime)}
 			cd = cd.Next()
+			cd.Candle.Candle.Update(tc.updatePrice)
 			if !cd.Candle.From.Equal(tc.expectedStartTime) {
 				t.Errorf("Expected startTime to be %s, got %s", tc.expectedStartTime, cd.Candle.From)
 			}

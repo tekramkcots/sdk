@@ -50,7 +50,7 @@ func TestNewCandle(t *testing.T) {
 			stopSignal := make(chan bool)
 			candleChans := []chan []instruments.Candle{make(chan []instruments.Candle)}
 			c := listener.NewCandle(tc.t, tc.c, candleChans, stopSignal)
-			go c.Listen([]instruments.Quote{})
+			go c.Listen([]instruments.Quote{}, indian.MarketStartTime())
 			if c.Type != tc.t {
 				t.Errorf("Expected %d, got %d", tc.t, c.Type)
 			}
@@ -101,24 +101,24 @@ var candleListenTestcases = []struct {
 		expectedCandles: map[uint32][]instruments.Candle{
 			1: {
 				{Token: 1, Candle: &candle.Data{
-					From:   time.Date(now.Year(), now.Month(), now.Day(), 9, 15, 0, 0, indian.GetTimeZone()),
+					From:   indian.MarketStartTime(),
 					Type:   candle.Minute,
 					Candle: &candle.Stick{Open: 100, High: 200, Low: 100, Close: 200},
 				}},
 				{Token: 1, Candle: &candle.Data{
-					From:   time.Date(now.Year(), now.Month(), now.Day(), 9, 16, 0, 0, indian.GetTimeZone()),
+					From:   indian.MarketStartTime().Add(time.Minute),
 					Type:   candle.Minute,
 					Candle: &candle.Stick{Open: 300, High: 400, Low: 300, Close: 400},
 				}},
 			},
 			2: {
 				{Token: 2, Candle: &candle.Data{
-					From:   time.Date(now.Year(), now.Month(), now.Day(), 9, 15, 0, 0, indian.GetTimeZone()),
+					From:   indian.MarketStartTime(),
 					Type:   candle.Minute,
 					Candle: &candle.Stick{Open: 500, High: 600, Low: 500, Close: 600},
 				}},
 				{Token: 2, Candle: &candle.Data{
-					From:   time.Date(now.Year(), now.Month(), now.Day(), 9, 16, 0, 0, indian.GetTimeZone()),
+					From:   indian.MarketStartTime().Add(time.Minute),
 					Type:   candle.Minute,
 					Candle: &candle.Stick{Open: 700, High: 800, Low: 700, Close: 800},
 				}},
@@ -149,14 +149,14 @@ var candleListenTestcases = []struct {
 		expectedCandles: map[uint32][]instruments.Candle{
 			1: {
 				{Token: 1, Candle: &candle.Data{
-					From:   time.Date(now.Year(), now.Month(), now.Day(), 9, 15, 0, 0, indian.GetTimeZone()),
+					From:   indian.MarketStartTime(),
 					Type:   candle.Minute,
 					Candle: &candle.Stick{Open: 250, High: 430, Low: 200, Close: 430},
 				}},
 			},
 			2: {
 				{Token: 2, Candle: &candle.Data{
-					From:   time.Date(now.Year(), now.Month(), now.Day(), 9, 15, 0, 0, indian.GetTimeZone()),
+					From:   indian.MarketStartTime(),
 					Type:   candle.Minute,
 					Candle: &candle.Stick{Open: 500, High: 700, Low: 450, Close: 600},
 				}},
@@ -175,7 +175,7 @@ func TestCandleListen(t *testing.T) {
 			out := make(chan map[uint32][]instruments.Candle)
 			candleChans := []chan []instruments.Candle{make(chan []instruments.Candle)}
 			c := listener.NewCandle(tc.t, tc.c, candleChans, stopSignal1)
-			go c.Listen(tc.ins)
+			go c.Listen(tc.ins, indian.MarketStartTime())
 			go collectCandles(candleChans, stopSignal2, out)
 			sendTicks(tc.ticks, c.C, tc.tickesEvery)
 			stopSignal1 <- true

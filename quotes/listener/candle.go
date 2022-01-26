@@ -5,7 +5,6 @@ import (
 
 	"github.com/tekramkcots/sdk/dto/candle"
 	"github.com/tekramkcots/sdk/dto/instruments"
-	"github.com/tekramkcots/sdk/markets/indian"
 	"github.com/zerodha/gokiteconnect/v4/models"
 )
 
@@ -26,8 +25,6 @@ func (t Type) GetValue(tick models.Tick) float64 {
 	return 0
 }
 
-var ListenerStartTime = time.Date(2021, time.December, 26, 9, 15, 0, 0, indian.GetTimeZone())
-
 type Candle struct {
 	Type       Type
 	CandleType candle.Type
@@ -40,13 +37,11 @@ func NewCandle(listenerType Type, candleType candle.Type, chans []chan []instrum
 	return &Candle{Type: listenerType, CandleType: candleType, C: make(chan models.Tick), Chans: chans, stopChan: stopSignal}
 }
 
-func (c *Candle) Listen(ins []instruments.Quote) {
+func (c *Candle) Listen(ins []instruments.Quote, startTime time.Time) {
 	candles := map[uint32]instruments.Candle{}
-	startTime := time.Now()
-	startTime = time.Date(startTime.Year(), startTime.Month(), startTime.Day(), ListenerStartTime.Hour(), ListenerStartTime.Minute(), 0, 0, startTime.Location())
+	startTime = time.Date(startTime.Year(), startTime.Month(), startTime.Day(), startTime.Hour(), startTime.Minute(), 0, 0, startTime.Location())
 	for _, inst := range ins {
-		instr := instruments.Quote{Token: inst.Token}
-		candles[inst.Token] = instruments.Candle{Token: inst.Token, Candle: candle.NewData(c.CandleType, c.Type.GetValue(instr.Tick()), startTime)}
+		candles[inst.Token] = instruments.Candle{Token: inst.Token, Candle: candle.NewData(c.CandleType, startTime)}
 	}
 	ticker := time.NewTicker(c.CandleType.Duration())
 	for {
