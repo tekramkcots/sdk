@@ -68,8 +68,6 @@ func TestNewCandle(t *testing.T) {
 	}
 }
 
-var now = time.Now()
-
 var candleListenTestcases = []struct {
 	name            string
 	t               listener.Type
