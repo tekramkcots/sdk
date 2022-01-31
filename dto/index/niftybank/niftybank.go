@@ -81,5 +81,5 @@ func NormalisedValue(symbol string, value float64) float64 {
 	if !ok {
 		return 0
 	}
-	return value / float64(company.Weightage)
+	return value * float64(company.Weightage) / 100
 }
