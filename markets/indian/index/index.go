@@ -5,5 +5,5 @@ type Index struct {
 	Symbol      string
 	Name        string
 	Description string
-	Composition map[string]float64
+	Composition map[string]Company
 }

@@ -20,3 +20,18 @@ const (
 	PNBBankSymbol       = "PNB"
 	IDFCFirstBankSymbol = "IDFCFIRSTB"
 )
+
+const (
+	HDFCBankName      = "HDFC Bank"
+	ICICIBankName     = "ICICI Bank"
+	KotakBankName     = "Kotak Mahindra Bank"
+	SBIName           = "State Bank of India"
+	AxisBankName      = "Axis Bank"
+	IndusIndBankName  = "IndusInd Bank"
+	AuBankName        = "AU Small Finance Bank"
+	BandhanBankName   = "Bandhan Bank"
+	BankOfBarodaName  = "Bank of Baroda"
+	FederalBankName   = "Federal Bank"
+	PNBBankName       = "Punjab National Bank"
+	IDFCFirstBankName = "IDFC First Bank"
+)

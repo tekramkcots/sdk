@@ -4,7 +4,7 @@ package index
 type Company struct {
 	Symbol    string
 	Name      string
-	Industry  string
+	Industry  Industry
 	Series    Series
 	Weightage float32
 }
