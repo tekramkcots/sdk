@@ -45,6 +45,13 @@ func GetHistoricalFor(db gorm.DB, instrumentID uint, candleType CandleType, from
 	return historicalData, nil
 }
 
+func DeleteHistoricalData(db *gorm.DB, from, to time.Time) error {
+	if err := db.Where("time >= ? AND time <= ?", from.Unix(), to.Unix()).Delete(&HistoricalData{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func SaveHistoricalData(db *gorm.DB, historicalData []HistoricalData) error {
 	batchSize := 500
 	nearestBatchSizeTotalLen := (len(historicalData)/batchSize)*batchSize + batchSize

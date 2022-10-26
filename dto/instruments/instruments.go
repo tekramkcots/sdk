@@ -20,6 +20,7 @@ type HistoricalData struct {
 }
 
 type Instrument struct {
+	ModelID         uint                        `json:"-"`
 	InstrumentToken int                         `json:"instrument_token"`
 	ExchangeToken   int                         `json:"exchange_token"`
 	Tradingsymbol   string                      `json:"tradingsymbol"`
@@ -37,6 +38,7 @@ type Instrument struct {
 
 func FromModel(ins models.Instrument) Instrument {
 	return Instrument{
+		ModelID:         ins.ID,
 		InstrumentToken: ins.InstrumentToken,
 		ExchangeToken:   ins.ExchangeToken,
 		Tradingsymbol:   ins.Tradingsymbol,
@@ -58,6 +60,56 @@ func FromModels(ins []models.Instrument) Instruments {
 		result = append(result, FromModel(i))
 	}
 	return *NewInstruments(result)
+}
+
+func (i Instrument) ToModel() models.Instrument {
+	return models.Instrument{
+		InstrumentToken: i.InstrumentToken,
+		ExchangeToken:   i.ExchangeToken,
+		Tradingsymbol:   i.Tradingsymbol,
+		Name:            i.Name,
+		LastPrice:       i.LastPrice,
+		Expiry:          i.Expiry,
+		StrikePrice:     i.StrikePrice,
+		TickSize:        i.TickSize,
+		LotSize:         i.LotSize,
+		InstrumentType:  i.InstrumentType,
+		Segment:         i.Segment,
+		Exchange:        i.Exchange,
+	}
+}
+
+func (i Instruments) ToModels() []models.Instrument {
+	var result []models.Instrument
+	for _, i := range i.ins {
+		result = append(result, i.ToModel())
+	}
+	return result
+}
+
+func (h HistoricalData) ToModel(instrumentID uint, candleType models.CandleType) models.HistoricalData {
+	return models.HistoricalData{
+		InstrumentID: instrumentID,
+		CandleType:   candleType,
+		Time:         h.Time,
+		Open:         h.Open,
+		High:         h.High,
+		Low:          h.Low,
+		Close:        h.Close,
+		Volume:       h.Volume,
+		OI:           h.OI,
+	}
+}
+
+func (i Instruments) HistoricalData(candleType models.CandleType) []models.HistoricalData {
+	var result = []models.HistoricalData{}
+	for _, ins := range i.ins {
+		candles := ins.Candles[candleType.String()]
+		for _, candle := range candles {
+			result = append(result, candle.ToModel(ins.ModelID, candleType))
+		}
+	}
+	return result
 }
 
 type Instruments struct {

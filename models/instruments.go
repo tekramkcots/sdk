@@ -18,6 +18,23 @@ type Instrument struct {
 	Exchange        string
 }
 
+func GetAllInstruments(db *gorm.DB) ([]Instrument, error) {
+	var instruments []Instrument
+	err := db.Find(&instruments).Error
+	if err != nil {
+		return nil, err
+	}
+	return instruments, nil
+}
+
+func DeleteAllInstruments(db *gorm.DB) error {
+	err := db.Where("1").Delete(&Instrument{}).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func SaveInstruments(db *gorm.DB, instruments []Instrument) error {
 	batchSize := 500
 	nearestBatchSizeTotalLen := (len(instruments)/batchSize)*batchSize + batchSize

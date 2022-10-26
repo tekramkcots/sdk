@@ -1,7 +1,7 @@
 package index
 
 const (
-	BankNiftySymbol      = "BANKNIFTY"
+	BankNiftySymbol      = "NIFTY BANK"
 	BankNiftyName        = "Nifty Bank"
 	BankNiftyDescription = "The NIFTY Bank Index comprises of the most liquid and large Indian Banking stocks."
 )
