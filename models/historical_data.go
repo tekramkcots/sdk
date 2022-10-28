@@ -28,7 +28,7 @@ const (
 )
 
 var candleStrMap = map[CandleType]string{
-	OneMinute:     "1minute",
+	OneMinute:     "minute",
 	FiveMinute:    "5minute",
 	FifteenMinute: "15minute",
 }
@@ -37,16 +37,16 @@ func (c CandleType) String() string {
 	return candleStrMap[c]
 }
 
-func GetHistoricalFor(db gorm.DB, instrumentID uint, candleType CandleType, from, to time.Time) ([]HistoricalData, error) {
+func GetHistoricalFor(db *gorm.DB, instrumentID uint, candleType CandleType, from, to time.Time) ([]HistoricalData, error) {
 	var historicalData []HistoricalData
-	if err := db.Where("instrument_id = ? AND candle_type = ? AND time >= ? AND time <= ?", instrumentID, candleType, from, to).Find(&historicalData).Error; err != nil {
+	if err := db.Where("instrument_id = ? AND candle_type = ? AND time >= ? AND time <= ?", instrumentID, candleType, from.Unix(), to.Unix()).Find(&historicalData).Error; err != nil {
 		return nil, err
 	}
 	return historicalData, nil
 }
 
-func DeleteHistoricalData(db *gorm.DB, from, to time.Time) error {
-	if err := db.Where("time >= ? AND time <= ?", from.Unix(), to.Unix()).Delete(&HistoricalData{}).Error; err != nil {
+func DeleteHistoricalData(db *gorm.DB, from, to time.Time, candleType CandleType) error {
+	if err := db.Where("time >= ? AND time <= ? AND candle_type = ?", from.Unix(), to.Unix(), candleType).Delete(&HistoricalData{}).Error; err != nil {
 		return err
 	}
 	return nil

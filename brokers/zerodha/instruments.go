@@ -41,7 +41,12 @@ func (c Client) DownloadHistoricalData(ins instruments.Instruments, from, to tim
 		i := insI[j]
 		// Get historical data
 		currentFrom := from
-		currentTo := from.AddDate(0, 0, 100)
+		currentTo := from
+		if interval == "1minute" {
+			currentTo = from.AddDate(0, 0, 20)
+		} else {
+			currentTo = from.AddDate(0, 0, 100)
+		}
 		if currentTo.After(to) {
 			currentTo = to
 		}
@@ -63,7 +68,11 @@ func (c Client) DownloadHistoricalData(ins instruments.Instruments, from, to tim
 				})
 			}
 			currentFrom = currentTo
-			currentTo = currentFrom.AddDate(0, 0, 100)
+			if interval == "1minute" {
+				currentTo = from.AddDate(0, 0, 20)
+			} else {
+				currentTo = from.AddDate(0, 0, 100)
+			}
 			if currentTo.After(to) {
 				currentTo = to
 			}
@@ -73,7 +82,7 @@ func (c Client) DownloadHistoricalData(ins instruments.Instruments, from, to tim
 		}
 		i.Candles[interval] = allHistorical
 		insI[j] = i
-		c.logger.Println("downloaded historical data for", i.Tradingsymbol)
+		c.logger.Println("downloaded", interval, "historical data for", i.Tradingsymbol)
 	}
 	return instruments.NewInstruments(insI), nil
 }

@@ -101,6 +101,26 @@ func (h HistoricalData) ToModel(instrumentID uint, candleType models.CandleType)
 	}
 }
 
+func FromHistoricalDataModel(h models.HistoricalData) HistoricalData {
+	return HistoricalData{
+		Time:   h.Time,
+		Open:   h.Open,
+		High:   h.High,
+		Low:    h.Low,
+		Close:  h.Close,
+		Volume: h.Volume,
+		OI:     h.OI,
+	}
+}
+
+func FromHistoricalDataModels(hData []models.HistoricalData) []HistoricalData {
+	result := []HistoricalData{}
+	for _, h := range hData {
+		result = append(result, FromHistoricalDataModel(h))
+	}
+	return result
+}
+
 func (i Instruments) HistoricalData(candleType models.CandleType) []models.HistoricalData {
 	var result = []models.HistoricalData{}
 	for _, ins := range i.ins {

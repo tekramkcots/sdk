@@ -27,8 +27,16 @@ func GetAllInstruments(db *gorm.DB) ([]Instrument, error) {
 	return instruments, nil
 }
 
+func GetInstrumentFor(db *gorm.DB, symbol string) (*Instrument, error) {
+	var instrument Instrument
+	if err := db.Where("tradingsymbol = ?", symbol).First(&instrument).Error; err != nil {
+		return nil, err
+	}
+	return &instrument, nil
+}
+
 func DeleteAllInstruments(db *gorm.DB) error {
-	err := db.Where("1").Delete(&Instrument{}).Error
+	err := db.Where("1 = 1").Delete(&Instrument{}).Error
 	if err != nil {
 		return err
 	}
