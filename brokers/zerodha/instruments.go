@@ -42,7 +42,7 @@ func (c Client) DownloadHistoricalData(ins instruments.Instruments, from, to tim
 		// Get historical data
 		currentFrom := from
 		currentTo := from
-		if interval == "1minute" {
+		if interval == "minute" {
 			currentTo = from.AddDate(0, 0, 20)
 		} else {
 			currentTo = from.AddDate(0, 0, 100)
@@ -68,10 +68,10 @@ func (c Client) DownloadHistoricalData(ins instruments.Instruments, from, to tim
 				})
 			}
 			currentFrom = currentTo
-			if interval == "1minute" {
-				currentTo = from.AddDate(0, 0, 20)
+			if interval == "minute" {
+				currentTo = currentFrom.AddDate(0, 0, 20)
 			} else {
-				currentTo = from.AddDate(0, 0, 100)
+				currentTo = currentFrom.AddDate(0, 0, 100)
 			}
 			if currentTo.After(to) {
 				currentTo = to

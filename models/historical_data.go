@@ -39,7 +39,7 @@ func (c CandleType) String() string {
 
 func GetHistoricalFor(db *gorm.DB, instrumentID uint, candleType CandleType, from, to time.Time) ([]HistoricalData, error) {
 	var historicalData []HistoricalData
-	if err := db.Where("instrument_id = ? AND candle_type = ? AND time >= ? AND time <= ?", instrumentID, candleType, from.Unix(), to.Unix()).Find(&historicalData).Error; err != nil {
+	if err := db.Where("instrument_id = ? AND candle_type = ? AND time >= ? AND time <= ?", instrumentID, candleType, from.Unix(), to.Unix()).Order("time asc").Find(&historicalData).Error; err != nil {
 		return nil, err
 	}
 	return historicalData, nil
