@@ -1,6 +1,6 @@
 module github.com/tekramkcots/sdk
 
-go 1.18
+go 1.23.2
 
 require (
 	github.com/nats-io/nats.go v1.13.1-0.20220121202836-972a071d373d
