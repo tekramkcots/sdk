@@ -3,7 +3,7 @@ package trade
 import "github.com/tekramkcots/sdk/dto/instruments"
 
 type Trade struct {
-	Buy        bool
+	IsLong     bool
 	ExitTrade  bool
 	ExitFor    string
 	ID         string

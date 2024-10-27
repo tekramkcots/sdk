@@ -91,6 +91,9 @@ func (b *Backtest) processTrade(tr trade.Trade, id string, resultChannel chan<- 
 	} else {
 		delete(openTr, tr.ExitFor)
 		profit := (tr.Price - openTrd.Price) * float64(tr.Qty)
+		if tr.IsLong {
+			profit *= -1
+		}
 		withDelta := WithDelta(profit, tr.Time)
 		withThetaAndDelta := WithTheta(withDelta, openTrd.Time, tr.Time)
 		pnl := trade.PnL{
@@ -128,16 +131,16 @@ func WithTheta(price float64, startTime, endTime int64) float64 {
 func WithDelta(price float64, ts int64) float64 {
 	t := time.Unix(ts, 0)
 	switch t.Weekday() {
-	case time.Friday:
-		return price * 0.45
-	case time.Monday:
-		return price * 0.55
-	case time.Tuesday:
-		return price * 0.65
-	case time.Wednesday:
-		return price * 0.75
 	case time.Thursday:
-		return price * 0.85
+		return price * 0.7
+	case time.Friday:
+		return price * 0.6
+	case time.Monday:
+		return price * 0.7
+	case time.Tuesday:
+		return price * 0.8
+	case time.Wednesday:
+		return price * 0.9
 	}
 	return 0.0
 }

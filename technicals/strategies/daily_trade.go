@@ -10,9 +10,10 @@ import (
 )
 
 type openPosition struct {
-	id   string
-	qty  uint64
-	time int64
+	id     string
+	qty    uint64
+	time   int64
+	isLong bool
 }
 
 // DailyTrade is an example strategy where we take the trade on the first quote of the day
@@ -80,7 +81,7 @@ func (d *DailyTrade) processQuote(q instruments.HistoricalData, trCh chan trade.
 		d.currentDay = t
 		d.wg.Add(1)
 		go d.sendTrade(trade.Trade{
-			Buy:        true,
+			IsLong:     true,
 			ExitTrade:  false,
 			ExitFor:    "",
 			ID:         d.currentPosition.id,
@@ -95,7 +96,7 @@ func (d *DailyTrade) processQuote(q instruments.HistoricalData, trCh chan trade.
 	if d.currentPosition != nil && t.Hour() >= 15 && t.Minute() >= 15 {
 		d.wg.Add(1)
 		go d.sendTrade(trade.Trade{
-			Buy:        false,
+			IsLong:     false,
 			ExitTrade:  true,
 			ExitFor:    d.currentPosition.id,
 			ID:         fmt.Sprintf("%s-%d", d.ID(), d.trades+1),

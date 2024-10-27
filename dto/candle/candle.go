@@ -37,6 +37,10 @@ func (c Stick) Next() *Stick {
 
 type Type uint
 
+func (t Type) NotSet() bool {
+	return t == 0
+}
+
 func (c Type) GetStartTime(t time.Time) time.Time {
 	timeParameter := t.Minute()
 	adjust := time.Duration(timeParameter % int(c))

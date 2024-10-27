@@ -6,6 +6,6 @@ import (
 )
 
 func GetAllStrategies(instrument instruments.Instrument) []backtesting.Strategy {
-	allStratgies := []backtesting.Strategy{NewDailyTrade(instrument, 25)}
+	allStratgies := []backtesting.Strategy{NewDailyTrade(instrument, 15), NewMACDStrategy(instrument, 15)}
 	return allStratgies
 }
